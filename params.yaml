@@ -12,3 +12,6 @@ train:
   conv2d_kernels: [3, 3, 3]
   pool_sizes: [2, 2, 2]
   dense_units: [64, 32]
+
+evaluate:
+  selected_emotions: ["Happy", "Sad", "Neutral"]

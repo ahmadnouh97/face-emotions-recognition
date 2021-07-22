@@ -2,7 +2,6 @@ import tensorflow as tf
 import sys
 import os
 import yaml
-import json
 
 sys.path.append(os.path.abspath('./'))
 from Code.config import Config
@@ -14,11 +13,10 @@ with open(Config.PARAMS_PATH) as f:
 
 x_train = read_data(os.path.join(Config.PREPARED_DATA_DIR, 'x_train.pkl'))
 x_val = read_data(os.path.join(Config.PREPARED_DATA_DIR, 'x_val.pkl'))
-x_test = read_data(os.path.join(Config.PREPARED_DATA_DIR, 'x_test.pkl'))
+
 
 y_train = read_data(os.path.join(Config.PREPARED_DATA_DIR, 'y_train.pkl'))
 y_val = read_data(os.path.join(Config.PREPARED_DATA_DIR, 'y_val.pkl'))
-y_test = read_data(os.path.join(Config.PREPARED_DATA_DIR, 'y_test.pkl'))
 
 model = build_model(
     class_num=int(params['class_num']),
@@ -40,9 +38,7 @@ history = model.fit(x=x_train,
                     epochs=int(params['epochs']),
                     callbacks=[early_stopping])
 
-with open(os.path.join(Config.PLOTS_DIR, 'history.json'), 'w') as file:
-    json.dump(history.history, file)
 
-# plot_training_history(history, save_to=Config.PLOTS_DIR)
+plot_training_history(history, save_to=Config.PLOTS_DIR)
 
 model.save(os.path.join(Config.MODEL_DIR, 'model.h5'))

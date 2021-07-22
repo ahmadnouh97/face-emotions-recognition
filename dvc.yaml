@@ -17,10 +17,8 @@ stages:
     cmd: python Code/train.py
     deps:
     - Code/train.py
-    - Data/prepared_data/x_test.pkl
     - Data/prepared_data/x_train.pkl
     - Data/prepared_data/x_val.pkl
-    - Data/prepared_data/y_test.pkl
     - Data/prepared_data/y_train.pkl
     - Data/prepared_data/y_val.pkl
     params:
@@ -36,5 +34,15 @@ stages:
     - train.pool_sizes
     outs:
     - Model/model.h5
-    plots:
-    - Plots/history.json
+    - Plots/accuracy.png
+    - Plots/loss.png
+  evaluate:
+    cmd: python Code/evaluate.py
+    deps:
+    - Code/evaluate.py
+    - Data/prepared_data/x_test.pkl
+    - Data/prepared_data/y_test.pkl
+    params:
+    - evaluate.selected_emotions
+    metrics:
+    - Metrics/metrics.json

@@ -32,3 +32,4 @@ def plot_training_history(history, save_to):
     plt.legend(['train', 'val'], loc='upper left')
     plt.show()
     plt.savefig(os.path.join(save_to, 'loss.png'))
+

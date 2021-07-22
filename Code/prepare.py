@@ -42,14 +42,16 @@ x = np.array(list(data['pixels'].apply(str_to_image)))
 x = x[:, :, :, np.newaxis]
 
 data_split_dict = data['Usage'].value_counts().to_dict()
+t = data_split_dict.get('Training')
+v = data_split_dict.get('PublicTest')
 
-x_train = x[:data_split_dict.get('Training')]
-x_val = x[data_split_dict.get('Training'):data_split_dict.get('Training') + data_split_dict.get('PublicTest')]
-x_test = x[data_split_dict.get('Training') + data_split_dict.get('PublicTest'):]
+x_train = x[:t]
+x_val = x[t:t + v]
+x_test = x[t + v:]
 
-y_train = y[:data_split_dict.get('Training')]
-y_val = y[data_split_dict.get('Training'):data_split_dict.get('Training') + data_split_dict.get('PublicTest')]
-y_test = y[data_split_dict.get('Training') + data_split_dict.get('PublicTest'):]
+y_train = y[:t]
+y_val = y[t:t + v]
+y_test = y[t + v:]
 
 
 os.makedirs(Config.PREPARED_DATA_DIR, exist_ok=True)
