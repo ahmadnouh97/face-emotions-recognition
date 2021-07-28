@@ -4,8 +4,8 @@ stages:
     cmd: python Code/prepare.py
     deps:
     - path: Code/prepare.py
-      md5: b4c0378c460caf3257fdd0e0a03e2365
-      size: 2452
+      md5: dd8b1f05180794fa55e7c8546ad07fbb
+      size: 3055
     - path: Data/fer2013.csv
       md5: f8428a1edbd21e88f42c73edd2a14f95
       size: 301072766
@@ -16,53 +16,41 @@ stages:
         - Sad
         - Neutral
     outs:
-    - path: Data/prepared_data/x_test.pkl
-      md5: c274777676ff17f4ef6914dfffa07d94
-      size: 38688934
-    - path: Data/prepared_data/x_train.pkl
-      md5: e8d9e0aa8327737847b6388ffd93edb0
-      size: 313528486
-    - path: Data/prepared_data/x_val.pkl
-      md5: d49b6cd271d2846b68a5c3dd4bb19c5d
-      size: 39721126
-    - path: Data/prepared_data/y_test.pkl
-      md5: 88db4c0782cc388ea6799e7a44f52a6b
-      size: 16951
-    - path: Data/prepared_data/y_train.pkl
-      md5: 52b150e3fc482bdc42d524bc16dfb750
-      size: 136239
-    - path: Data/prepared_data/y_val.pkl
-      md5: 3c52a9b6335bd97ded670d3137e74dd1
-      size: 17399
+    - path: Data/prepared_data/test
+      md5: bfa8e955e014e9ddfa0175cfe5ab30e0.dir
+      size: 3748479
+      nfiles: 2099
+    - path: Data/prepared_data/train
+      md5: 1200e52743e4aabdfce4bdc67ef8aab9.dir
+      size: 30333675
+      nfiles: 17010
+    - path: Data/prepared_data/val
+      md5: 55e8aa611727dde06eeb75fe8b6b8eb8.dir
+      size: 3849877
+      nfiles: 2155
   train:
     cmd: python Code/train.py
     deps:
     - path: Code/train.py
-      md5: f37345c8117cc2c43233152a1430690f
-      size: 1799
-    - path: Data/prepared_data/x_test.pkl
-      md5: c274777676ff17f4ef6914dfffa07d94
-      size: 38688934
-    - path: Data/prepared_data/x_train.pkl
-      md5: e8d9e0aa8327737847b6388ffd93edb0
-      size: 313528486
-    - path: Data/prepared_data/x_val.pkl
-      md5: d49b6cd271d2846b68a5c3dd4bb19c5d
-      size: 39721126
-    - path: Data/prepared_data/y_test.pkl
-      md5: 88db4c0782cc388ea6799e7a44f52a6b
-      size: 16951
-    - path: Data/prepared_data/y_train.pkl
-      md5: 52b150e3fc482bdc42d524bc16dfb750
-      size: 136239
-    - path: Data/prepared_data/y_val.pkl
-      md5: 3c52a9b6335bd97ded670d3137e74dd1
-      size: 17399
+      md5: 200f11b26d4fedf0d8566cbb0161f69f
+      size: 3059
+    - path: Data/prepared_data/train
+      md5: 1200e52743e4aabdfce4bdc67ef8aab9.dir
+      size: 30333675
+      nfiles: 17010
+    - path: Data/prepared_data/val
+      md5: 55e8aa611727dde06eeb75fe8b6b8eb8.dir
+      size: 3849877
+      nfiles: 2155
     params:
       params.yaml:
         train.activation_func: relu
         train.batch_size: 32
         train.class_num: 3
+        train.classes:
+        - Happy
+        - Sad
+        - Neutral
         train.conv2d_kernels:
         - 3
         - 3
@@ -74,7 +62,8 @@ stages:
         train.dense_units:
         - 64
         - 32
-        train.epochs: 100
+        train.dropout: 0.2
+        train.epochs: 1
         train.image_size: 48
         train.learning_rate: 0.001
         train.pool_sizes:
@@ -82,9 +71,29 @@ stages:
         - 2
         - 2
     outs:
-    - path: Model/model.h5
-      md5: 4b3254e078accdd903a535f9633b2103
-      size: 2892304
-    - path: Plots/history.json
-      md5: 47bc86e69f8cdcfdd5ab4d060740949a
-      size: 931
+    - path: Model/model.tf.index
+      md5: 7b150b726a75a7c8366e67cf02b53afd
+      size: 5356
+    - path: Plots/accuracy.png
+      md5: 88c9b680bc3aa2ed91dab1b0a5c668c7
+      size: 16832
+    - path: Plots/loss.png
+      md5: 572236c065abb646fd2dcb5b50cb445c
+      size: 16489
+  evaluate:
+    cmd: python Code/evaluate.py
+    deps:
+    - path: Code/evaluate.py
+      md5: 6b54e595fd2ab6cd28ded3ba0949e30b
+      size: 2988
+    - path: Data/prepared_data/test
+      md5: bfa8e955e014e9ddfa0175cfe5ab30e0.dir
+      size: 3748479
+      nfiles: 2099
+    - path: Model/model.tf.index
+      md5: 7b150b726a75a7c8366e67cf02b53afd
+      size: 5356
+    outs:
+    - path: Metrics/f1_score.json
+      md5: 05a608205974bb7a45237cd0cdae9589
+      size: 89
