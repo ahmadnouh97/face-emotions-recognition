@@ -7,21 +7,17 @@ stages:
     params:
     - prepare.selected_emotions
     outs:
-    - Data/prepared_data/x_test.pkl
-    - Data/prepared_data/x_train.pkl
-    - Data/prepared_data/x_val.pkl
-    - Data/prepared_data/y_test.pkl
-    - Data/prepared_data/y_train.pkl
-    - Data/prepared_data/y_val.pkl
+    - Data/prepared_data/train
+    - Data/prepared_data/val
+    - Data/prepared_data/test
   train:
     cmd: python Code/train.py
     deps:
     - Code/train.py
-    - Data/prepared_data/x_train.pkl
-    - Data/prepared_data/x_val.pkl
-    - Data/prepared_data/y_train.pkl
-    - Data/prepared_data/y_val.pkl
+    - Data/prepared_data/train
+    - Data/prepared_data/val
     params:
+    - train.classes
     - train.activation_func
     - train.batch_size
     - train.class_num
@@ -32,17 +28,16 @@ stages:
     - train.image_size
     - train.learning_rate
     - train.pool_sizes
+    - train.dropout
     outs:
-    - Model/model.h5
+    - Model/model.tf.index
     - Plots/accuracy.png
     - Plots/loss.png
   evaluate:
     cmd: python Code/evaluate.py
     deps:
     - Code/evaluate.py
-    - Data/prepared_data/x_test.pkl
-    - Data/prepared_data/y_test.pkl
-    params:
-    - evaluate.selected_emotions
+    - Data/prepared_data/test
+    - Model/model.tf.index
     metrics:
-    - Metrics/metrics.json
+    - Metrics/f1_score.json
