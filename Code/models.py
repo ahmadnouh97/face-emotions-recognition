@@ -8,7 +8,8 @@ def build_model(class_num: int,
                 dense_units: list,
                 conv2d_units: list,
                 conv2d_kernels: list,
-                pool_sizes: list):
+                pool_sizes: list,
+                dropout: float):
 
     model = tf.keras.Sequential()
 
@@ -25,16 +26,27 @@ def build_model(class_num: int,
             model.add(
                 tf.keras.layers.Conv2D(units,
                                        (kernel_size, kernel_size),
-                                       activation=activation_func,
-                                       input_shape=(image_size, image_size))
+                                       padding='same',
+                                       input_shape=(image_size, image_size, 1))
+            )
+        else:
+            model.add(
+                tf.keras.layers.Conv2D(units, (kernel_size, kernel_size), padding='same')
             )
 
         model.add(
-            tf.keras.layers.Conv2D(units, (kernel_size, kernel_size), activation=activation_func)
+            tf.keras.layers.BatchNormalization()
+        )
+
+        model.add(
+            tf.keras.layers.Activation(activation_func)
         )
 
         model.add(
             tf.keras.layers.MaxPooling2D((pool_size, pool_size))
+        )
+        model.add(
+            tf.keras.layers.Dropout(dropout)
         )
 
     model.add(
@@ -43,7 +55,16 @@ def build_model(class_num: int,
 
     for units in dense_units:
         model.add(
-            tf.keras.layers.Dense(units, activation=activation_func),
+            tf.keras.layers.Dense(units),
+        )
+        model.add(
+            tf.keras.layers.BatchNormalization()
+        )
+        model.add(
+            tf.keras.layers.Activation(activation_func)
+        )
+        model.add(
+            tf.keras.layers.Dropout(dropout)
         )
 
     model.add(
@@ -51,7 +72,7 @@ def build_model(class_num: int,
     )
 
     model.compile(
-        loss='sparse_categorical_crossentropy',
+        loss='categorical_crossentropy',
         optimizer=tf.keras.optimizers.Adam(learning_rate),
         metrics=['accuracy']
     )
