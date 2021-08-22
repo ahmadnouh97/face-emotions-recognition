@@ -17,6 +17,13 @@ stages:
     - Data/prepared_data/train
     - Data/prepared_data/val
     params:
+    - train.zoom_range
+    - train.rotation_range
+    - train.width_shift_range
+    - train.height_shift_range
+    - train.brightness_range
+    - train.horizontal_flip
+    - train.vertical_flip
     - train.classes
     - train.activation_func
     - train.batch_size
@@ -33,6 +40,20 @@ stages:
     - Model/model.tf.index
     - Plots/accuracy.png
     - Plots/loss.png
+    plots:
+    - Plots/val_loss.csv:
+        template: smooth
+        title: Validation Loss Per Epoch
+        cache: false
+        x: epoch
+        y: val_loss
+    - Plots/val_accuracy.csv:
+        template: smooth
+        title: Validation Accuracy Per Epoch
+        cache: false
+        x: epoch
+        y: val_accuracy
+
   evaluate:
     cmd: python Code/evaluate.py
     deps:
@@ -41,3 +62,21 @@ stages:
     - Model/model.tf.index
     metrics:
     - Metrics/f1_score.json
+    - Metrics/precision.json
+    - Metrics/recall.json
+    - Metrics/happy_f1_score.json
+    - Metrics/happy_precision.json
+    - Metrics/happy_recall.json
+    - Metrics/sad_f1_score.json
+    - Metrics/sad_precision.json
+    - Metrics/sad_recall.json
+    - Metrics/neutral_f1_score.json
+    - Metrics/neutral_precision.json
+    - Metrics/neutral_recall.json
+    plots:
+    - Plots/classes.csv:
+        template: confusion
+        title: Confusion Matrix
+        cache: false
+        x: predicted
+        y: actual

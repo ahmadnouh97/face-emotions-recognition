@@ -6,7 +6,7 @@ import yaml
 sys.path.append(os.path.abspath('./'))
 from Code.config import Config
 from Code.models import build_model
-from Code.utils import plot_training_history
+from Code.utils import plot_training_history, save_to_csv
 
 with open(Config.PARAMS_PATH) as f:
     params = yaml.load(f.read())['train']
@@ -16,12 +16,13 @@ batch_size = int(params['batch_size'])
 classes = list(params['classes'])
 
 train_data_generator = tf.keras.preprocessing.image.ImageDataGenerator(
-    rotation_range=20,
-    width_shift_range=0.2,
-    height_shift_range=0.2,
-    brightness_range=[0.5, 1.5],
-    horizontal_flip=True,
-    vertical_flip=True
+    rotation_range=int(params['rotation_range']),
+    width_shift_range=float(params['width_shift_range']),
+    height_shift_range=float(params['height_shift_range']),
+    brightness_range=list(params['brightness_range']),
+    zoom_range=float(params['zoom_range']),
+    horizontal_flip=bool(params['horizontal_flip']),
+    vertical_flip=bool(params['vertical_flip'])
 )
 
 train_generator = train_data_generator.flow_from_directory(
@@ -35,12 +36,13 @@ train_generator = train_data_generator.flow_from_directory(
 )
 
 val_data_generator = tf.keras.preprocessing.image.ImageDataGenerator(
-    rotation_range=20,
-    width_shift_range=0.2,
-    height_shift_range=0.2,
-    brightness_range=[0.5, 1.5],
-    horizontal_flip=True,
-    vertical_flip=True
+    rotation_range=int(params['rotation_range']),
+    width_shift_range=float(params['width_shift_range']),
+    height_shift_range=float(params['height_shift_range']),
+    brightness_range=list(params['brightness_range']),
+    zoom_range=float(params['zoom_range']),
+    horizontal_flip=bool(params['horizontal_flip']),
+    vertical_flip=bool(params['vertical_flip']),
 )
 
 val_generator = val_data_generator.flow_from_directory(
@@ -70,6 +72,8 @@ model = build_model(
 )
 
 early_stopping = tf.keras.callbacks.EarlyStopping(monitor='val_loss', patience=8, restore_best_weights=True)
+reduce_lr = tf.keras.callbacks.ReduceLROnPlateau(monitor='val_loss', factor=0.1, patience=5, min_lr=0.000001)
+
 steps_per_epoch = train_generator.n // train_generator.batch_size
 validation_steps = val_generator.n // val_generator.batch_size
 
@@ -80,7 +84,8 @@ history = model.fit(
     validation_data=val_generator,
     validation_steps=validation_steps,
     callbacks=[
-        early_stopping
+        early_stopping,
+        reduce_lr
     ]
 )
 
@@ -93,5 +98,17 @@ history = model.fit(
 
 
 plot_training_history(history, save_to=Config.PLOTS_DIR)
+
+history_val_loss = {
+    'epoch': [epoch for epoch in range(len(history.history.get('val_loss')))],
+    'val_loss': [loss for loss in history.history.get('val_loss')]
+}
+history_val_accuracy = {
+    'epoch': [epoch for epoch in range(len(history.history.get('val_loss')))],
+    'val_accuracy': [accuracy for accuracy in history.history.get('val_accuracy')]
+}
+
+save_to_csv(history_val_loss, os.path.join(Config.PLOTS_DIR, 'val_loss.csv'))
+save_to_csv(history_val_accuracy, os.path.join(Config.PLOTS_DIR, 'val_accuracy.csv'))
 
 model.save_weights(os.path.join(Config.MODEL_DIR, 'model.tf'), save_format='tf')

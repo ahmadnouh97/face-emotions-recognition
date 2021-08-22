@@ -1,5 +1,6 @@
 import os
 import pickle as pkl
+import pandas as pd
 import matplotlib.pyplot as plt
 from tensorflow.keras.preprocessing.image import array_to_img
 
@@ -40,3 +41,10 @@ def plot_training_history(history, save_to):
 def image_to_file(array, file_path):
     img = array_to_img(array)
     img.save(file_path, format='PNG')
+
+
+def save_to_csv(obj, file_path):
+    key = list(obj.keys())[0]
+    df = pd.DataFrame(obj, index=list(range(len(obj.get(key)))))
+    df.to_csv(file_path, index=False)
+
