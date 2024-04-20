@@ -1,6 +1,7 @@
 .dvc/
 Data/
 Model/
+Metrics/
 **/**/.ipynb_checkpoints
 **/**/__pycache__
 **/**/.vscode

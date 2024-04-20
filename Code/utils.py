@@ -1,6 +1,8 @@
 import os
 import pickle as pkl
+import pandas as pd
 import matplotlib.pyplot as plt
+from tensorflow.keras.preprocessing.image import array_to_img
 
 
 def read_data(file_path):
@@ -21,8 +23,9 @@ def plot_training_history(history, save_to):
     plt.ylabel('accuracy')
     plt.xlabel('epoch')
     plt.legend(['train', 'val'], loc='upper left')
-    plt.show()
     plt.savefig(os.path.join(save_to, 'accuracy.png'))
+    plt.show()
+    plt.clf()
 
     plt.plot(history.history['loss'])
     plt.plot(history.history['val_loss'])
@@ -30,5 +33,18 @@ def plot_training_history(history, save_to):
     plt.ylabel('loss')
     plt.xlabel('epoch')
     plt.legend(['train', 'val'], loc='upper left')
-    plt.show()
     plt.savefig(os.path.join(save_to, 'loss.png'))
+    plt.show()
+    plt.clf()
+
+
+def image_to_file(array, file_path):
+    img = array_to_img(array)
+    img.save(file_path, format='PNG')
+
+
+def save_to_csv(obj, file_path):
+    key = list(obj.keys())[0]
+    df = pd.DataFrame(obj, index=list(range(len(obj.get(key)))))
+    df.to_csv(file_path, index=False)
+
